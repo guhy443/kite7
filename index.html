@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kite AI: Wind Runner — Day 7 Quiz</title>
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #2b1055, #7597de);
+  color: #fff;
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh; margin: 0;
+}
+.container {
+  width: 90%; max-width: 600px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 30px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  text-align: center;
+}
+h1 { font-size: 1.6rem; margin-bottom: 20px; }
+button {
+  background: #ffcc00; color: #000; border: none;
+  padding: 12px 25px; border-radius: 10px;
+  cursor: pointer; font-size: 1rem; margin-top: 20px;
+  transition: 0.3s;
+}
+button:hover { background: #ffaa00; }
+.option {
+  background: rgba(255,255,255,0.2);
+  padding: 12px; border-radius: 10px; margin: 8px 0;
+  cursor: pointer; transition: 0.3s;
+}
+.option:hover { background: rgba(255,255,255,0.4); }
+.correct { background: #2ecc71 !important; color: #000 !important; }
+.wrong { background: #e74c3c !important; color: #fff !important; }
+.progress { width: 100%; background: rgba(255,255,255,0.3); border-radius: 10px; margin: 20px 0; }
+.progress-bar { height: 10px; width: 0%; background: #ffcc00; border-radius: 10px; transition: width 0.3s; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="startScreen">
+    <h1>🪁 Kite AI: Wind Runner — Day 7 Quiz</h1>
+    <p>Let’s see how much you know about AI creativity, SBTs, and UGC missions!</p>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div id="quizScreen" class="hidden">
+    <h1 id="question"></h1>
+    <div id="options"></div>
+    <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+    <button id="nextBtn" class="hidden" onclick="nextQuestion()">Next</button>
+  </div>
+
+  <div id="resultScreen" class="hidden">
+    <h1>🎉 Quiz Completed!</h1>
+    <p id="scoreText"></p>
+    <button onclick="restartQuiz()">Restart</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {q:"What does “Proof of Creativity” mean in Kite AI?", a:["Number of followers","On-chain record of your original content","Likes on your post","Retweets from others"], c:1},
+  {q:"How do you qualify for Wind Runner rewards?", a:["By buying tokens","By completing creative AI tasks","By commenting emojis","By joining late"], c:1},
+  {q:"What is the role of SBT (Soulbound Token) in Kite AI?", a:["To show your identity & achievements on-chain","To trade between users","To unlock memes","To buy NFTs"], c:0},
+  {q:"Why does Kite AI encourage UGC (User Generated Content)?", a:["It reduces network fees","It builds community-led creativity","It hides user data","It replaces blockchain"], c:1},
+  {q:"Which hashtag increases your visibility in the Wind Runner campaign?", a:["#RandomAI","#WindRunner","#JustForFun","#NoHashtag"], c:1},
+  {q:"What makes on-chain content more powerful than social media posts?", a:["It is permanent, transparent, and verifiable","It gets more likes","It disappears after 24 hours","It’s only visible to devs"], c:0},
+  {q:"Who can become a “Wind Runner Creator”?", a:["Only developers","Anyone posting creative AI content on-chain","Paid users","Influencers only"], c:1},
+  {q:"What is the benefit of verifiable UGC missions?", a:["Prevents fake submissions","Increases token price","Reduces AI model accuracy","Makes posting slower"], c:0},
+  {q:"Kite AI Agents help creators by…", a:["Automating tasks & verifying creativity","Posting spam links","Deleting data","Trading tokens"], c:0},
+  {q:"What’s the goal of Wind Runner’s daily challenges?", a:["To build consistent creative habits","To flood Twitter with posts","To end campaigns","To copy other creators"], c:0}
+];
+
+let current = 0, score = 0;
+
+const startScreen = document.getElementById("startScreen");
+const quizScreen = document.getElementById("quizScreen");
+const resultScreen = document.getElementById("resultScreen");
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+const progressBar = document.getElementById("progressBar");
+const scoreText = document.getElementById("scoreText");
+
+function startQuiz(){
+  startScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  current = 0; score = 0;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  const q = questions[current];
+  questionEl.textContent = `Q${current+1}. ${q.q}`;
+  optionsEl.innerHTML = "";
+  q.a.forEach((opt, i)=>{
+    const div = document.createElement("div");
+    div.textContent = opt;
+    div.className = "option";
+    div.onclick = ()=>selectAnswer(i, div);
+    optionsEl.appendChild(div);
+  });
+  progressBar.style.width = `${(current / questions.length) * 100}%`;
+  nextBtn.classList.add("hidden");
+}
+
+function selectAnswer(i, btn){
+  const q = questions[current];
+  const opts = document.querySelectorAll(".option");
+  opts.forEach(o => o.onclick = null);
+  if(i === q.c){
+    btn.classList.add("correct");
+    score++;
+  } else {
+    btn.classList.add("wrong");
+    opts[q.c].classList.add("correct");
+  }
+  nextBtn.classList.remove("hidden");
+}
+
+function nextQuestion(){
+  current++;
+  if(current < questions.length) loadQuestion();
+  else finishQuiz();
+}
+
+function finishQuiz(){
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+  progressBar.style.width = "100%";
+  scoreText.textContent = `You scored ${score} / ${questions.length}!`;
+}
+
+function restartQuiz(){
+  resultScreen.classList.add("hidden");
+  startScreen.classList.remove("hidden");
+}
+</script>
+</body>
+</html>
